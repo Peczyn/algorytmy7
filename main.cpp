@@ -8,10 +8,10 @@ using namespace std::chrono;
 int randINT() {
     // Making rng static ensures that it stays the same
     // Between different invocations of the function
-    static default_random_engine rng;
-
-    uniform_real_distribution<int> dist(1, 10000);
-    return dist(rng);
+    std::random_device dev;
+    std::mt19937 rng(dev());
+    std::uniform_int_distribution<std::mt19937::result_type> dist6(1,1000);
+    return dist6(rng);
 }
 
 void swap(vector<int> &array, int x, int y);
@@ -28,23 +28,26 @@ void testTimes();
 int main() {
 
     vector<int> unsorted;
-//    for(int k=0; k<1000; k++)
-//    {
-//        unsorted.push_back(randINT());
-//    }
-//    vector<int> BubbleSorted = BubbleSort(unsorted);
-//    vector<int> InsertionSorted = InsertionSort(unsorted);
-//    vector<int> SelectionSorted = SelectionSort(unsorted);
-//    vector<int> CombSorted = CombSort(unsorted);
-//    vector<int> ShellSorted = ShellSort(unsorted);
-//
-//    printVec(unsorted);
-//    printVec(BubbleSorted);
-//    printVec(InsertionSorted);
-//    printVec(SelectionSorted);
-//    printVec(CombSorted);
-//    printVec(ShellSorted);
-    testTimes();
+    for(int k=38; k>0; k--)
+    {
+        unsorted.push_back(k);
+    }
+
+
+    vector<int> BubbleSorted = BubbleSort(unsorted);
+    vector<int> InsertionSorted = InsertionSort(unsorted);
+    vector<int> SelectionSorted = SelectionSort(unsorted);
+    vector<int> CombSorted = CombSort(unsorted);
+    vector<int> ShellSorted = ShellSort(unsorted);
+
+    printVec(unsorted);
+    printVec(BubbleSorted);
+    printVec(InsertionSorted);
+    printVec(SelectionSorted);
+    printVec(CombSorted);
+    printVec(ShellSorted);
+
+//    testTimes();
     return 0;
 }
 
@@ -64,21 +67,19 @@ void printVec(vector<int> vec)
     }
     cout << endl;
 }
+
+
 vector<int> BubbleSort(vector<int> array)
 {
-    int min;
-    int temp;
-    for(int i=0; i<array.size(); i++)
-    {
-        min=i;
-        for(int j=i; j<array.size(); j++)
-        {
-            if(array[min]>array[j])
-            {
-                min=j;
+    int index = 0;
+    while(index==0) {
+        index=1;
+        for (int i = 0; i < array.size()-1; i++) {
+            if (array[i] > array[i + 1]) {
+                swap(array, i, i + 1);
+                index=0;
             }
         }
-        swap(array,i,min);
     }
     return array;
 }
@@ -123,48 +124,53 @@ vector<int> SelectionSort(vector<int> array)
 }
 vector<int> CombSort(vector<int> array)
 {
-    int combgap = 11;
-    while(combgap>array.size())
-    {
-        combgap/=1.3;
-    }
+    int combgap = (array.size()*10)/13;
+    bool swapped = true;
 
-    while(combgap>0)
+
+    while(combgap!=1 || swapped )
     {
-        for(int i=0; i<array.size()-combgap; i++)
-        {
+        swapped = false;
+        for(int i=0; i < array.size()-combgap; i++){
             if(array[i]>array[i+combgap])
             {
                 swap(array,i,i+combgap);
+                swapped = true;
             }
         }
-        combgap/=1.3;
+        combgap= combgap*10/13;
+        if(combgap==0){
+            combgap=1;
+        }
     }
     return array;
 
 }
 vector<int> ShellSort(vector<int> array) {
-    int gap = array.size()/2;
     int k;
-    while(gap>0)
+    for(int gap=array.size()/2; gap>0; gap/=2)
     {
         for(int i=gap; i<array.size(); i++)
         {
             k=i;
-            while(k-gap>=0)
+            bool noswap = true;
+            while(k-gap>=0 && noswap)
             {
+                noswap = false;
                 if(array[k]<array[k-gap])
                 {
                     swap(array,k,k-gap);
+                    noswap = true;
                 }
                 k-=gap;
             }
         }
-        gap/=2;
     }
 
     return array;
 }
+
+
 void testTimes()
 {
 //    vector<int> czasBubble;
@@ -174,7 +180,7 @@ void testTimes()
 //    vector<int> czasShell;
     vector<int> unsorted;
     int czas1,czas2,czas3,czas4,czas5;
-    for(int i=10; i<100000; i*=10)
+    for(int i=10; i<10000; i*=10)
     {
 //        for(int j=0; j<5; j++)
 //        {
@@ -199,6 +205,7 @@ void testTimes()
 
             auto start3 = high_resolution_clock::now();
             CombSort(unsorted);
+//            combSort(unsorted);
             auto stop3 = high_resolution_clock::now();
             czas4=((duration_cast<microseconds>(stop3 - start3)).count());
 
