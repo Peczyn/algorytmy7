@@ -27,27 +27,27 @@ void testTimes();
 
 int main() {
 
-    vector<int> unsorted;
-    for(int k=38; k>0; k--)
-    {
-        unsorted.push_back(k);
-    }
+//    vector<int> unsorted;
+//    for(int k=38; k>0; k--)
+//    {
+//        unsorted.push_back(k);
+//    }
+//
+//
+//    vector<int> BubbleSorted = BubbleSort(unsorted);
+//    vector<int> InsertionSorted = InsertionSort(unsorted);
+//    vector<int> SelectionSorted = SelectionSort(unsorted);
+//    vector<int> CombSorted = CombSort(unsorted);
+//    vector<int> ShellSorted = ShellSort(unsorted);
+//
+//    printVec(unsorted);
+//    printVec(BubbleSorted);
+//    printVec(InsertionSorted);
+//    printVec(SelectionSorted);
+//    printVec(CombSorted);
+//    printVec(ShellSorted);
 
-
-    vector<int> BubbleSorted = BubbleSort(unsorted);
-    vector<int> InsertionSorted = InsertionSort(unsorted);
-    vector<int> SelectionSorted = SelectionSort(unsorted);
-    vector<int> CombSorted = CombSort(unsorted);
-    vector<int> ShellSorted = ShellSort(unsorted);
-
-    printVec(unsorted);
-    printVec(BubbleSorted);
-    printVec(InsertionSorted);
-    printVec(SelectionSorted);
-    printVec(CombSorted);
-    printVec(ShellSorted);
-
-//    testTimes();
+    testTimes();
     return 0;
 }
 
@@ -85,15 +85,18 @@ vector<int> BubbleSort(vector<int> array)
 }
 vector<int> InsertionSort(vector<int> array)
 {
-    int a;
+    int a,key;
     for(int i=1; i<array.size(); i++)
     {
-        a=i;
-        while(array[a]<array[a-1] && a>0)
+        a=i-1;
+        key=array[i];
+        while(key<array[a] && a>=0)
         {
-            swap(array,a,a-1);
+//            swap(array,a,a+1);
+            array[a+1]=array[a];
             a--;
         }
+        array[a+1]=key;
     }
     return array;
 
@@ -111,7 +114,8 @@ vector<int> SelectionSort(vector<int> array)
                 min=j;
             }
         }
-        swap(array,min,i); //najmniejszy element w obszarze wstawiam w pierwsze nieposortowane miejsce w tablicy
+        swap(array[i],array[min]);
+//        swap(array,min,i); //najmniejszy element w obszarze wstawiam w pierwsze nieposortowane miejsce w tablicy
     }
     return array;
 }
@@ -166,17 +170,20 @@ vector<int> ShellSort(vector<int> array) {
 
 void testTimes()
 {
-//    vector<int> czasBubble;
-//    vector<int> czasInsert;
-//    vector<int> czasSelect;
-//    vector<int> czasComb;
-//    vector<int> czasShell;
     vector<int> unsorted;
-    int czas1,czas2,czas3,czas4,czas5;
-    for(int i=10; i<10000; i*=10)
-    {
-//        for(int j=0; j<5; j++)
-//        {
+    int czas;
+    int i = 10000;
+    int liczbapomiarow = 20;
+    long int sumaShell = 0;
+    long int sumaBubble = 0;
+    long int sumaInsert = 0;
+    long int sumaSelect = 0;
+    long int sumaComb = 0;
+    cout << "Liczba elementów: " << i << endl;
+
+
+        for(int j=0; j<liczbapomiarow; j++)
+        {
             for(int k=0; k<i; k++)
             {
                 unsorted.push_back(randINT());
@@ -184,32 +191,44 @@ void testTimes()
             auto start = high_resolution_clock::now();
             BubbleSort(unsorted);
             auto stop = high_resolution_clock::now();
-            czas1=((duration_cast<microseconds>(stop - start)).count());
+            czas=((duration_cast<microseconds >(stop - start)).count());
+            cout << "BubbleSort: "<< czas;
+            sumaBubble+=czas;
 
-            auto start1 = high_resolution_clock::now();
+            start = high_resolution_clock::now();
             InsertionSort(unsorted);
-            auto stop1 = high_resolution_clock::now();
-            czas2=((duration_cast<microseconds>(stop1 - start1)).count());
+            stop = high_resolution_clock::now();
+            czas=((duration_cast<microseconds >(stop - start)).count());
+            cout << "\tInsertionSort: "<< czas;
+            sumaInsert+=czas;
 
-            auto start2 = high_resolution_clock::now();
+            start = high_resolution_clock::now();
             SelectionSort(unsorted);
-            auto stop2 = high_resolution_clock::now();
-            czas3=((duration_cast<microseconds>(stop2 - start2)).count());
+            stop = high_resolution_clock::now();
+            czas=((duration_cast<microseconds >(stop - start)).count());
+            cout << "\tSelectionSort: "<< czas;
+            sumaSelect+=czas;
 
-            auto start3 = high_resolution_clock::now();
+            start = high_resolution_clock::now();
             CombSort(unsorted);
-//            combSort(unsorted);
-            auto stop3 = high_resolution_clock::now();
-            czas4=((duration_cast<microseconds>(stop3 - start3)).count());
+            stop = high_resolution_clock::now();
+            czas=((duration_cast<microseconds >(stop - start)).count());
+            cout << "\tCombSort: "<< czas;
+            sumaComb+=czas;
 
-            auto start4 = high_resolution_clock::now();
+            start = high_resolution_clock::now();
             ShellSort(unsorted);
-            auto stop4 = high_resolution_clock::now();
-            czas5=((duration_cast<microseconds>(stop4 - start4)).count());
+            stop = high_resolution_clock::now();
+            czas=((duration_cast<microseconds >(stop - start)).count());
+            cout << "\tShellSort: "<< czas << endl;
+            sumaShell+=czas;
+            unsorted.clear();
+        }
 
-            cout << "Bubble: " << czas1 << "\tInsert: " << czas2 << "\tSelect: "<< czas3 << "\tComb: "<< czas4 <<"\tShell: "<< czas5 << endl;
-//        }
-
-
+        cout << "Srednie czasy: \nBubbleSort: " << sumaBubble/liczbapomiarow;
+        cout << "\tInsertionSort: "<< sumaInsert/liczbapomiarow;
+        cout << "\tSelectionSort: "<< sumaSelect/liczbapomiarow;
+        cout << "\tCombSort: "<< sumaComb/liczbapomiarow;
+        cout << "\tShellSort: "<< sumaShell/liczbapomiarow << endl;
     }
-}
+
